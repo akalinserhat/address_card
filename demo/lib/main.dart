@@ -82,39 +82,49 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              AddressCard(
+              const AddressCard(
                 id: "aaa",
                 title: "My Home",
-                stockTitleImage: 604,
+                // stockTitleImage: 604,
                 address: "Fatih mh. Çağlayan sk. No:7",
                 district: "Başiskele",
                 province: "Kocaeli",
-                menuItems: addressCardMenuItems(),
-                onTapMenuItem: (i) => _onTapMenuItem(),
+                // menuItems: addressCardMenuItems(),
+                // onTapMenuItem: (context, i, id) => _onTapMenuItem(),
                 // onTapMenuItem: (a) => onTapMenuItem(a),
               ),
               const SizedBox(
                 height: 10.0,
               ),
-              AddressCard(
+              const AddressCard(
                 id: "bbb",
-                stockTitleImage: 3,
+                // stockTitleImage: 3,
                 title: "My Store",
                 address: "Akdurak mh. Kızılay cd. No:6",
                 district: "Kandıra",
                 province: "Kocaeli",
                 phoneNumber: "02625512225",
-                menuItems: addressCardMenuItems(),
-                onTapMenuItem: (i) => _onTapMenuItem(),
+                // menuItems: addressCardMenuItems(),
+                // onTapMenuItem: (context, i, id) => _onTapMenuItem(),
               ),
               const SizedBox(
                 height: 10.0,
               ),
               const ChooseAvatar(),
-              // ElevatedButton(
-              //     onPressed: () =>
-              //         showSearch(context: context, delegate: AvatarPickup()),
-              //     child: const Text("Icon Gallery")),
+              PopupMenuButton<Function()>(
+                  itemBuilder: (context) => [
+                        PopupMenuItem<Function()>(
+                            value: () {
+                              print("serhat");
+                            },
+                            child: const Text("Serhat")),
+                        PopupMenuItem(
+                            value: () {
+                              print("özlem");
+                            },
+                            child: const Text("Özlem")),
+                      ],
+                  onSelected: (value) => value()),
             ],
           ),
         ),

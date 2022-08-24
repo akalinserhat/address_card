@@ -3,7 +3,7 @@ part of '../address_card.dart';
 class AddressCard extends StatelessWidget {
   final String id;
   final Image? titleImage;
-  final int? stockTitleImage;
+  final String? avatarUrl;
   final Image? mapImage;
   final String title;
   final String address;
@@ -11,15 +11,16 @@ class AddressCard extends StatelessWidget {
   final String province;
   final String? phoneNumber;
   final BoxDecoration boxDecoration;
-  final List<PopupMenuEntry<int>>? menuItems;
-  final Function(int)? onTapMenuItem;
+  final List<PopupMenuItem<Function(BuildContext context, String id)>>?
+      menuItems;
+  // final Function(BuildContext context, int index, String id)? onTapMenuItem;
   // final Function(int)? onTapMenuItem;
 
   const AddressCard(
       {Key? key,
       required this.id,
       this.titleImage,
-      this.stockTitleImage,
+      this.avatarUrl,
       this.mapImage,
       this.phoneNumber,
       this.boxDecoration = const BoxDecoration(
@@ -33,7 +34,7 @@ class AddressCard extends StatelessWidget {
                 offset: Offset(1, 1)),
           ]),
       this.menuItems,
-      this.onTapMenuItem,
+      // this.onTapMenuItem,
       required this.title,
       required this.address,
       required this.district,
@@ -43,21 +44,19 @@ class AddressCard extends StatelessWidget {
   //********** Widgets ***********/
 
   Widget _avatarArea() {
-    if (titleImage != null) {
-      return const CircleAvatar();
-    }
-
-    if (stockTitleImage != null) {
-      return CircleAvatar(
-        backgroundImage: getAvatar(stockTitleImage!),
-        // AssetImage("lib/assets/icons/$stockTitleImage.png",
-        //     package: "address_card"),
-      );
-    }
-    return const CircleAvatar();
+    String url = (avatarUrl != null)
+        ? avatarUrl!
+        : "$protocolAvatar$pathDefaultAddressAvatar";
+    return SizedBox(
+      height: 50,
+      width: 50,
+      child: CircleAvatarHasAction(
+        controller: CircleAvatarHasActionController(url: url),
+      ),
+    );
   }
 
-  Widget _titleArea() {
+  Widget _titleArea(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 10.0),
       child: Row(
@@ -65,7 +64,10 @@ class AddressCard extends StatelessWidget {
         children: [
           _avatarArea(),
           const SizedBox(width: 5.0),
-          Text(title),
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
         ],
       ),
     );
@@ -83,23 +85,13 @@ class AddressCard extends StatelessWidget {
     );
   }
 
-  Widget _menuArea() {
-    if (menuItems != null) {
-      return PopupMenuButton<int>(
-        itemBuilder: (context) => menuItems!,
-        onSelected: (i) {
-          if (onTapMenuItem != null) {
-            onTapMenuItem!(i);
-          } else {
-            if (kDebugMode) {
-              print("onTapMenuItem is null");
-            }
-          }
-        },
-      );
-    } else {
-      return Container();
-    }
+  Widget _menuArea(BuildContext context) {
+    if (menuItems == null) return Container();
+
+    return PopupMenuButton<Function(BuildContext context, String id)>(
+      itemBuilder: (context) => menuItems!,
+      onSelected: (value) => value(context, id),
+    );
   }
 
   Widget _mapImage() {
@@ -112,7 +104,7 @@ class AddressCard extends StatelessWidget {
     );
   }
 
-  Widget _content() {
+  Widget _content(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 13.0, right: 13),
       child: Row(
@@ -124,7 +116,7 @@ class AddressCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _titleArea(),
+                  _titleArea(context),
                   const SizedBox(
                     height: 10.0,
                   ),
@@ -140,7 +132,7 @@ class AddressCard extends StatelessWidget {
               children: [
                 Expanded(
                   flex: 1,
-                  child: _menuArea(),
+                  child: _menuArea(context),
                 ),
                 Expanded(flex: 3, child: _mapImage()),
               ],
@@ -153,11 +145,12 @@ class AddressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 147.0,
-      constraints: const BoxConstraints(maxWidth: 337.00),
-      decoration: boxDecoration,
-      child: _content(),
+    return Card(
+      color: Theme.of(context).cardTheme.color,
+      child: SizedBox(
+        height: 147.0,
+        child: _content(context),
+      ),
     );
   }
 }
